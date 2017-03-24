@@ -12,28 +12,28 @@ namespace RoslynTest
 {
     public class Excutor
     {
-        public async Task Execute()
+        public async Task Execute(string slnPath)
         {
-            var slnPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "RoslynTest.sln"));
-
             var workspace = MSBuildWorkspace.Create();
             var solution = await workspace.OpenSolutionAsync(slnPath);
 
-            Project project = solution.Projects.First(x => x.Name == "ProjectForClassVisitorTest");
-            var compilation = await project.GetCompilationAsync();
-
-            var classVisitor = new ClassVirtualizationVisitor();
-            foreach (var syntaxTree in compilation.SyntaxTrees)
+            foreach(Project project in solution.Projects)
             {
-                classVisitor.Visit(syntaxTree.GetRoot());
-            }
+                var compilation = await project.GetCompilationAsync();
 
-            foreach (var classDeclare in classVisitor.Classes)
-            {
-                foreach (var method in classDeclare.Members)
+                var classVisitor = new ClassVirtualizationVisitor();
+                foreach (var syntaxTree in compilation.SyntaxTrees)
                 {
-                    var syntaxNodes = new Analyzer().GetMatchPattern(method, "WebRequest", "Create");
-                }}
+                    classVisitor.Visit(syntaxTree.GetRoot());
+                }
+
+                foreach (var classDeclare in classVisitor.Classes)
+                {
+                    foreach (var method in classDeclare.Members)
+                    {
+                        var syntaxNodes = new Analyzer().GetMatchPattern(method, "WebRequest", "Create");
+                    }
+                }
             }
         }
     }

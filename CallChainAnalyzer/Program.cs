@@ -14,7 +14,9 @@ namespace RoslynTest
     {
         static void Main(string[] args)
         {
-            var task = new Excutor().Execute();
+            string path = args[0];
+
+            var task = new Excutor().Execute(path);
             task.Wait();
         }
     }
